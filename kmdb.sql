@@ -137,3 +137,108 @@
 
 -- The SQL statement for the cast output
 -- TODO!
+
+
+DROP TABLE IF EXISTS movies;
+DROP TABLE IF EXISTS actors;
+DROP TABLE IF EXISTS characters;
+
+CREATE TABLE movies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  movie_name TEXT,
+  release_year NUMERIC,
+  rating TEXT,
+  studio TEXT,
+  actor_id NUMERIC,
+  character_id NUMERIC
+);
+
+CREATE TABLE actors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  full_name TEXT,
+  movie_id NUMERIC
+);
+
+CREATE TABLE characters (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  character_name TEXT,
+  movie_id NUMERIC,
+  actor_id NUMERIC
+);
+
+INSERT INTO movies (movie_name, release_year, rating, studio)
+VALUES 
+  ('Batman Begins', 2005, 'PG-13', 'Warner Bros.'),
+  ('The Dark Knight', 2008, 'PG-13', 'Warner Bros.'),
+  ('The Dark Knight Rises', 2012, 'PG-13', 'Warner Bros.');
+
+INSERT INTO actors (full_name)
+VALUES
+  ('Christian Bale'),
+  ('Michael Caine'),
+  ('Liam Neeson'),
+  ('Katie Holmes'),
+  ('Gary Oldman'),
+  ('Heath Ledger'),
+  ('Aaron Eckhart'),
+  ('Maggie Gyllenhaal'),
+  ('Tom Hardy'),
+  ('Joseph Gordon-Levitt'),
+  ('Anne Hathaway');
+
+
+INSERT INTO characters (character_name, movie_id, actor_id)
+VALUES
+  ('Bruce Wayne',           1, 1),  -- Batman Begins
+  ('Alfred',                1, 2),
+  ('Ra''s Al Ghul',         1, 3),
+  ('Rachel Dawes',          1, 4),
+  ('Commissioner Gordon',   1, 5),
+
+  ('Bruce Wayne',           2, 1),  -- The Dark Knight
+  ('Joker',                 2, 6),
+  ('Harvey Dent',           2, 7),
+  ('Alfred',                2, 2),
+  ('Rachel Dawes',          2, 8),
+
+  ('Bruce Wayne',           3, 1),  -- The Dark Knight Rises
+  ('Commissioner Gordon',   3, 5),
+  ('Bane',                  3, 9),
+  ('John Blake',            3, 10),
+  ('Selina Kyle',           3, 11);
+
+
+.mode column
+.headers off 
+
+.print "Movies"
+.print "======"
+.print ""
+
+SELECT DISTINCT
+  movies.movie_name,
+  movies.release_year,
+  movies.rating,
+  movies.studio
+FROM movies
+INNER JOIN characters
+  ON characters.movie_id = movies.id
+ORDER BY movies.release_year;
+
+.print ""
+.print "Top Cast"
+.print "========"
+.print ""
+
+SELECT
+  movies.movie_name,
+  actors.full_name          AS actor_full_name,
+  characters.character_name AS character_full_name
+FROM movies
+INNER JOIN characters
+  ON characters.movie_id = movies.id
+INNER JOIN actors
+  ON actors.id = characters.actor_id
+ORDER BY
+  movies.release_year,
+  characters.id;
